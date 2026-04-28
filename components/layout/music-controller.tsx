@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { spaceMusicPlayer } from '@/lib/space-music';
 
-type Route = '/' | '/planets' | '/orrery' | '/timeline' | '/quiz' | '/blackhole' | '/galaxy';
+type Route = '/' | '/planets' | '/orrery' | '/timeline' | '/quiz' | '/blackhole' | '/galaxy' | '/sandbox';
 
 function routeToPlay(pathname: string): Route | null {
   if (pathname === '/')                        return '/';
@@ -14,6 +14,7 @@ function routeToPlay(pathname: string): Route | null {
   if (pathname.startsWith('/quiz'))            return '/quiz';
   if (pathname.startsWith('/blackhole'))       return '/blackhole';
   if (pathname.startsWith('/galaxy'))          return '/galaxy';
+  if (pathname.startsWith('/sandbox'))         return '/sandbox';
   return null;
 }
 
@@ -26,6 +27,7 @@ function playForRoute(route: Route | null) {
     case '/quiz':      spaceMusicPlayer.playQuiz();      break;
     case '/blackhole': spaceMusicPlayer.playBlackHole(); break;
     case '/galaxy':    spaceMusicPlayer.playGalaxy();    break;
+    case '/sandbox':   spaceMusicPlayer.playSandbox();   break;
     default:           spaceMusicPlayer.stopAll();
   }
 }
@@ -115,12 +117,12 @@ export function MusicController() {
     if (muted) { setMuted(false); spaceMusicPlayer.setMuted(false); }
   };
 
-  const isBlackhole = pathname === '/blackhole';
+  const pinLeft = pathname === '/blackhole' || pathname === '/sandbox';
 
   return (
     <div
       ref={panelRef}
-      className={`fixed bottom-5 z-50 flex flex-col gap-2 ${isBlackhole ? 'left-5 items-start' : 'right-5 items-end'}`}
+      className={`fixed bottom-5 z-50 flex flex-col gap-2 ${pinLeft ? 'left-5 items-start' : 'right-5 items-end'}`}
     >
       {/* Volume panel */}
       {expanded && (

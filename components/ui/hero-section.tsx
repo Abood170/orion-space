@@ -12,12 +12,10 @@ const GRADIENT_START = 2; // "Solar" and "System" get the gradient
 
 export function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number>(0);
+  const rafRef    = useRef<number>(0);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,16 +23,12 @@ export function HeroSection() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
     const stars = Array.from({ length: 220 }, () => ({
-      x: Math.random(),
-      y: Math.random(),
+      x: Math.random(), y: Math.random(),
       r: Math.random() * 1.3 + 0.2,
       opacity: Math.random() * 0.65 + 0.2,
       phase: Math.random() * Math.PI * 2,
@@ -44,7 +38,6 @@ export function HeroSection() {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const t = performance.now() / 1000;
-
       for (const s of stars) {
         const opacity = s.opacity * (0.55 + 0.45 * Math.sin(s.phase + t * s.speed));
         ctx.beginPath();
@@ -52,20 +45,18 @@ export function HeroSection() {
         ctx.fillStyle = `rgba(255,255,255,${opacity.toFixed(3)})`;
         ctx.fill();
       }
-
       rafRef.current = requestAnimationFrame(draw);
     };
 
     draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafRef.current);
-    };
+    return () => { window.removeEventListener('resize', resize); cancelAnimationFrame(rafRef.current); };
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 pt-16 overflow-hidden">
+    <section
+      className="relative min-h-screen flex items-center justify-center px-6 pt-16 overflow-hidden"
+      style={{ textAlign: 'center' }}
+    >
       {/* Mouse-tracking spotlight */}
       <Spotlight />
 
@@ -73,45 +64,69 @@ export function HeroSection() {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ zIndex: -1 }}
         aria-hidden
       />
 
-      {/* Ambient centre glow */}
+      {/* Purple glow behind hero text */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at center, #1a1040 0%, transparent 70%)' }}
+      />
+
+      {/* Ambient centre blue glow */}
       <div
         className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse, #3b82f60a 0%, transparent 65%)', filter: 'blur(40px)' }}
+      />
+
+      {/* Blue planet — right side */}
+      <HeroPlanet />
+
+      {/* Left decorative planet — purple */}
+      <div
+        className="absolute rounded-full pointer-events-none hidden lg:block"
         style={{
-          background: 'radial-gradient(ellipse, #3b82f60a 0%, transparent 65%)',
-          filter: 'blur(40px)',
+          left: '4%', top: '40%',
+          width: 120, height: 120,
+          opacity: 0.6,
+          background: 'radial-gradient(circle at 32% 30%, #8b5cf6bb, #4c1d95)',
+          boxShadow: '0 0 40px #8b5cf625',
+          animation: 'floatUpDown 6s ease-in-out infinite',
         }}
       />
 
-      {/* 3D hero planet — floats on the right */}
-      <HeroPlanet />
-
-      {/* Accent orb bottom-left */}
+      {/* Third decorative planet — Mars-orange, bottom-left */}
       <div
-        className="absolute left-[6%] bottom-1/4 w-16 h-16 rounded-full pointer-events-none hidden lg:block"
+        className="absolute rounded-full pointer-events-none hidden lg:block"
         style={{
-          background: 'radial-gradient(circle at 32% 30%, #8b5cf6bb, #4c1d95)',
-          boxShadow: '0 0 40px #8b5cf625',
-          animation: 'float 9s ease-in-out 2s infinite',
+          left: '15%', bottom: '15%',
+          width: 80, height: 80,
+          opacity: 0.5,
+          background: 'radial-gradient(circle at 35% 35%, #ff8866, #cc4422)',
+          boxShadow: '0 0 30px #ff664420',
+          animation: 'float 7s ease-in-out 3s infinite',
         }}
       />
 
       {/* ── Hero text ── */}
-      <div className="relative z-10 text-center max-w-3xl mx-auto">
+      <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center">
+
         {/* Badge */}
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-blue-400 text-xs font-semibold tracking-[0.25em] uppercase mb-5"
+          className="inline-flex items-center px-3 py-1 rounded-full border border-white/20 mb-6"
         >
-          Solar System Explorer
-        </motion.p>
+          <span className="text-white/60 text-xs uppercase tracking-widest">Solar System Explorer</span>
+        </motion.div>
 
-        {/* Headline — word-by-word on client, plain on SSR */}
-        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold text-white leading-[1.05] tracking-tight mb-6">
+        {/* Headline */}
+        <h1
+          className="font-bold text-white tracking-tight mb-6"
+          style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', lineHeight: 1.05 }}
+        >
           {mounted ? (
             WORDS.map((word, i) => {
               const isGradient = i >= GRADIENT_START;
@@ -160,18 +175,14 @@ export function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 items-center justify-center"
         >
           <GlowingButton
-            onClick={() =>
-              document.getElementById('planets')?.scrollIntoView({ behavior: 'smooth' })
-            }
+            onClick={() => document.getElementById('planets')?.scrollIntoView({ behavior: 'smooth' })}
             variant="primary"
           >
             Start Exploring
           </GlowingButton>
 
           <GlowingButton
-            onClick={() =>
-              document.getElementById('planets')?.scrollIntoView({ behavior: 'smooth' })
-            }
+            onClick={() => document.getElementById('planets')?.scrollIntoView({ behavior: 'smooth' })}
             variant="ghost"
           >
             View all planets
@@ -188,8 +199,8 @@ export function HeroSection() {
       >
         <span className="text-[10px] tracking-[0.2em] uppercase">Scroll</span>
         <motion.div
-          animate={{ y: [0, 5, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
           <ArrowDown size={14} />
         </motion.div>

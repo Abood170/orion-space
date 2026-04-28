@@ -35,7 +35,7 @@ function LinkedInIcon() {
 
 export function Footer() {
   const pathname = usePathname();
-  if (pathname === '/blackhole' || pathname === '/orrery' || pathname === '/galaxy') return null;
+  if (pathname === '/blackhole' || pathname === '/orrery' || pathname === '/galaxy' || pathname === '/sandbox') return null;
   return (
     <footer className="relative z-10 border-t border-white/[0.06] mt-16">
       {/* Planet name marquee */}

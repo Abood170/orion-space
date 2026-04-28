@@ -5,8 +5,15 @@ import { Planet3D } from './planet-3d';
 export function HeroPlanet() {
   return (
     <div
-      className="absolute right-[6%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 hidden sm:block pointer-events-none"
-      style={{ animation: 'float 8s ease-in-out infinite' }}
+      className="absolute pointer-events-none hidden sm:block"
+      style={{
+        right: '2%',
+        top: '25%',
+        width: 200,
+        height: 200,
+        opacity: 0.7,
+        animation: 'floatDownUp 8s ease-in-out infinite',
+      }}
     >
       <Planet3D
         color="#3b82f6"

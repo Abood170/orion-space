@@ -226,6 +226,45 @@ export class SpaceMusicPlayer {
     this.isPlaying = true;
   }
 
+  // ── 8. Sandbox — energetic, dynamic ─────────────────────────────────────────
+  playSandbox() {
+    this.stopAll();
+    if (!this.ctx || !this.masterGain) return;
+    // E minor scale — driving, energetic
+    const notes = [164.81, 196.00, 220.00, 246.94, 293.66, 329.63];
+    notes.forEach((freq, i) => {
+      const osc     = this.ctx!.createOscillator();
+      const gain    = this.ctx!.createGain();
+      const tremolo = this.ctx!.createOscillator();
+      const tremG   = this.ctx!.createGain();
+
+      osc.type = i % 3 === 0 ? 'triangle' : i % 3 === 1 ? 'sine' : 'triangle';
+      osc.frequency.value = freq;
+      tremolo.frequency.value = 6 + i * 0.7;
+      tremG.gain.value = 0.025;
+      tremolo.connect(tremG);
+      tremG.connect(gain.gain);
+      tremolo.start();
+
+      gain.gain.value = 0.03;
+      osc.connect(gain);
+      gain.connect(this.masterGain!);
+      osc.start();
+      this.oscillators.push(osc, tremolo);
+    });
+    // Low pulse for energy
+    const pulse = this.ctx.createOscillator();
+    const pulseGain = this.ctx.createGain();
+    pulse.type = 'sine';
+    pulse.frequency.value = 82.41;
+    pulseGain.gain.value = 0.05;
+    pulse.connect(pulseGain);
+    pulseGain.connect(this.masterGain);
+    pulse.start();
+    this.oscillators.push(pulse);
+    this.isPlaying = true;
+  }
+
   // ── Controls ─────────────────────────────────────────────────────────────────
   stopAll() {
     if (this.pulseTimeout) { clearTimeout(this.pulseTimeout); this.pulseTimeout = null; }

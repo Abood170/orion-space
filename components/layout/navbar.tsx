@@ -6,29 +6,27 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react';
 import { cn } from '@/lib/utils';
 
-const navLinks = [
-  { href: '/', label: 'Home' },
+const directLinks = [
+  { href: '/',        label: 'Home'    },
   { href: '/planets', label: 'Planets' },
-  { href: '/orrery', label: 'Orrery' },
-  { href: '/timeline', label: 'Timeline' },
-  { href: '/quiz', label: 'Quiz' },
-  { href: '/blackhole', label: 'Black Hole' },
-  { href: '/galaxy',    label: 'Galaxy'     },
+];
+
+const dropdownLinks = [
+  { href: '/orrery',    label: 'Orrery',     icon: '🪐' },
+  { href: '/timeline',  label: 'Timeline',   icon: '📜' },
+  { href: '/quiz',      label: 'Quiz',       icon: '🧠' },
+  { href: '/blackhole', label: 'Black Hole', icon: '🕳️' },
+  { href: '/galaxy',    label: 'Galaxy',     icon: '🌌' },
+  { href: '/sandbox',   label: 'Sandbox',    icon: '⚛️' },
 ];
 
 function checkActive(pathname: string, href: string): boolean {
   return href === '/' ? pathname === '/' : pathname.startsWith(href);
 }
 
-// Magnetic nav link — no layoutId, no conditionally mounted underline
+// ─── Magnetic nav link ────────────────────────────────────────────────────────
 function MagLink({
-  href,
-  label,
-  active,
-  isHovered,
-  onEnter,
-  onLeave,
-  linkRef,
+  href, label, active, isHovered, onEnter, onLeave, linkRef,
 }: {
   href: string;
   label: string;
@@ -40,20 +38,16 @@ function MagLink({
 }) {
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const x = useSpring(mx, { stiffness: 250, damping: 20 });
-  const y = useSpring(my, { stiffness: 250, damping: 20 });
+  const x  = useSpring(mx, { stiffness: 250, damping: 20 });
+  const y  = useSpring(my, { stiffness: 250, damping: 20 });
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - rect.left - rect.width / 2) * 0.18);
-    my.set((e.clientY - rect.top - rect.height / 2) * 0.35);
+    mx.set((e.clientX - rect.left - rect.width  / 2) * 0.18);
+    my.set((e.clientY - rect.top  - rect.height / 2) * 0.35);
   };
 
-  const handleLeave = () => {
-    mx.set(0);
-    my.set(0);
-    onLeave();
-  };
+  const handleLeave = () => { mx.set(0); my.set(0); onLeave(); };
 
   return (
     <motion.div
@@ -66,12 +60,10 @@ function MagLink({
       <Link
         ref={linkRef}
         href={href}
-        className="relative block px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
-        style={{ color: active || isHovered ? '#fff' : 'rgba(255,255,255,0.5)' }}
+        className="relative block px-4 py-1.5 rounded-lg font-medium transition-colors duration-200"
+        style={{ fontSize: 14, color: active || isHovered ? '#fff' : 'rgba(255,255,255,0.5)' }}
       >
         {label}
-
-        {/* Hover dot — only shown on non-active links */}
         <AnimatePresence>
           {isHovered && !active && (
             <motion.span
@@ -89,13 +81,94 @@ function MagLink({
   );
 }
 
+// ─── Explore dropdown ─────────────────────────────────────────────────────────
+function ExploreDropdown({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const isAnyActive = dropdownLinks.some((l) => checkActive(pathname, l.href));
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  // Close on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  return (
+    <div
+      ref={ref}
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1 px-4 py-1.5 rounded-lg font-medium transition-colors duration-200"
+        style={{ fontSize: 14, color: isAnyActive || open ? '#fff' : 'rgba(255,255,255,0.5)' }}
+      >
+        Explore
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="text-[10px] opacity-60 mt-px"
+        >
+          ▾
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 mt-2 min-w-[180px] rounded-xl overflow-hidden z-50 py-1"
+            style={{
+              background: 'rgba(0,0,0,0.88)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255,255,255,0.10)',
+            }}
+          >
+            {dropdownLinks.map((link) => {
+              const active = checkActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-white/[0.06] transition-colors"
+                  style={{ color: active ? '#fff' : 'rgba(255,255,255,0.55)' }}
+                >
+                  <span className="text-base leading-none">{link.icon}</span>
+                  <span className={cn('text-[13px]', active && 'font-semibold')}>{link.label}</span>
+                  {active && (
+                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                  )}
+                </Link>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
 export function Navbar() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
-  const [hovered, setHovered] = useState<string | null>(null);
+  const [scrolled,  setScrolled]  = useState(false);
+  const [hovered,   setHovered]   = useState<string | null>(null);
   const [underline, setUnderline] = useState({ left: 0, width: 0, visible: false });
 
-  const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const linkRefs    = useRef<(HTMLAnchorElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -104,27 +177,22 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Measure the active link and position the single underline element
   useLayoutEffect(() => {
-    const activeIndex = navLinks.findIndex((l) => checkActive(pathname, l.href));
-    const el = linkRefs.current[activeIndex];
+    const activeIndex = directLinks.findIndex((l) => checkActive(pathname, l.href));
+    const el        = linkRefs.current[activeIndex];
     const container = containerRef.current;
 
     if (el && container) {
       const cRect = container.getBoundingClientRect();
       const eRect = el.getBoundingClientRect();
-      const pad = eRect.width * 0.1; // 10% inset each side → 80% wide underline
-      setUnderline({
-        left: eRect.left - cRect.left + pad,
-        width: eRect.width - pad * 2,
-        visible: true,
-      });
+      const pad   = eRect.width * 0.1;
+      setUnderline({ left: eRect.left - cRect.left + pad, width: eRect.width - pad * 2, visible: true });
     } else {
       setUnderline((u) => ({ ...u, visible: false }));
     }
   }, [pathname]);
 
-  if (pathname === '/blackhole' || pathname === '/galaxy') return null;
+  if (pathname === '/blackhole' || pathname === '/galaxy' || pathname === '/sandbox') return null;
 
   return (
     <nav
@@ -134,14 +202,12 @@ export function Navbar() {
       )}
       style={{
         animation: 'fadeDown 0.6s ease-out both',
-        borderBottom: scrolled
-          ? '1px solid transparent'
-          : '1px solid rgba(255,255,255,0.06)',
+        borderBottom: scrolled ? '1px solid transparent' : '1px solid rgba(255,255,255,0.06)',
         backgroundImage: scrolled
           ? 'linear-gradient(#0a0a0f, #0a0a0f), linear-gradient(90deg, transparent 0%, #3b82f6 30%, #8b5cf6 60%, transparent 100%)'
           : undefined,
         backgroundOrigin: scrolled ? 'border-box' : undefined,
-        backgroundClip: scrolled ? 'padding-box, border-box' : undefined,
+        backgroundClip:   scrolled ? 'padding-box, border-box' : undefined,
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -163,9 +229,9 @@ export function Navbar() {
 
         {/* Nav links + CTA */}
         <div className="flex items-center gap-1">
-          {/* Links container — relative so the underline can be absolutely positioned */}
-          <div ref={containerRef} className="relative flex items-center gap-1">
-            {/* Single persistent underline — slides between active links via CSS transition */}
+          {/* Links container */}
+          <div ref={containerRef} className="relative flex items-center gap-6">
+            {/* Sliding underline — only for direct links */}
             <div
               className="absolute bottom-0 h-px rounded-full bg-blue-400 pointer-events-none"
               style={{
@@ -176,7 +242,7 @@ export function Navbar() {
               }}
             />
 
-            {navLinks.map((link, i) => (
+            {directLinks.map((link, i) => (
               <MagLink
                 key={link.href}
                 href={link.href}
@@ -188,12 +254,14 @@ export function Navbar() {
                 linkRef={(el) => { linkRefs.current[i] = el; }}
               />
             ))}
+
+            <ExploreDropdown pathname={pathname} />
           </div>
 
-          {/* Explore CTA */}
+          {/* Launch App CTA */}
           <Link
             href="/planets"
-            className="relative ml-3 inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold text-white overflow-hidden group"
+            className="relative ml-3 inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold text-white overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
               boxShadow: '0 0 18px #3b82f622',
@@ -205,7 +273,7 @@ export function Navbar() {
               whileHover={{ x: '100%' }}
               transition={{ duration: 0.35 }}
             />
-            <span className="relative">Explore</span>
+            <span className="relative">Launch App</span>
           </Link>
         </div>
       </div>
