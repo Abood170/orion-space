@@ -12,6 +12,8 @@ const navLinks = [
   { href: '/orrery', label: 'Orrery' },
   { href: '/timeline', label: 'Timeline' },
   { href: '/quiz', label: 'Quiz' },
+  { href: '/blackhole', label: 'Black Hole' },
+  { href: '/galaxy',    label: 'Galaxy'     },
 ];
 
 function checkActive(pathname: string, href: string): boolean {
@@ -121,6 +123,8 @@ export function Navbar() {
       setUnderline((u) => ({ ...u, visible: false }));
     }
   }, [pathname]);
+
+  if (pathname === '/blackhole' || pathname === '/galaxy') return null;
 
   return (
     <nav

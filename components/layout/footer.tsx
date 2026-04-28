@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { planets } from '@/lib/planets';
 
 // Double the list for a seamless CSS marquee loop
@@ -10,6 +13,8 @@ const footerLinks = [
   { href: '/orrery', label: 'Orrery' },
   { href: '/timeline', label: 'Timeline' },
   { href: '/quiz', label: 'Quiz' },
+  { href: '/blackhole', label: 'Black Hole' },
+  { href: '/galaxy',    label: 'Galaxy'     },
 ];
 
 function GitHubIcon() {
@@ -29,6 +34,8 @@ function LinkedInIcon() {
 }
 
 export function Footer() {
+  const pathname = usePathname();
+  if (pathname === '/blackhole' || pathname === '/orrery' || pathname === '/galaxy') return null;
   return (
     <footer className="relative z-10 border-t border-white/[0.06] mt-16">
       {/* Planet name marquee */}

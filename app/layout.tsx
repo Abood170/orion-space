@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/footer';
 import { CursorGlow } from '@/components/ui/cursor-glow';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
+import { MusicController } from '@/components/layout/music-controller';
 
 // WebGL star field — must not run server-side
 const StarsBg = dynamic(
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <main className="relative z-10">{children}</main>
         <Footer />
+        <MusicController />
       </body>
     </html>
   );
