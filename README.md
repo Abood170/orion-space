@@ -2,7 +2,7 @@
 
 > An interactive 3D solar system explorer — explore all 8 planets, watch live orbital mechanics, journey through space history, and test your cosmic knowledge.
 
-🌐 **Live Demo:** [orion-space.vercel.app](orion-space-phi.vercel.app)
+🌐 **Live Demo:** [orion-space.vercel.app](https://orion-space-phi.vercel.app/)
 
 ---
 
