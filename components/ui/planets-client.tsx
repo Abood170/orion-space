@@ -109,7 +109,7 @@ export function PlanetsClient() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.85, y: -20 }}
               transition={{ duration: 0.25 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch"
             >
               {filtered.map((planet, i) => (
                 <PlanetCard key={planet.slug} planet={planet} index={i} />

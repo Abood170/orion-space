@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark bg-[#0a0a0f]" style={{ backgroundColor: '#0a0a0f' }}>
       <body
-        className={`${inter.variable} bg-[#0a0a0f] text-white antialiased`}
+        className={`${inter.variable} bg-[#0a0a0f] text-white antialiased min-h-screen`}
         style={{ backgroundColor: '#0a0a0f', color: 'white', minHeight: '100vh' }}
       >
         <CursorGlow />

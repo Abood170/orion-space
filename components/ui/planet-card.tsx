@@ -39,6 +39,7 @@ export function PlanetCard({ planet, index }: PlanetCardProps) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, delay: index * 0.05, ease: 'easeOut' }}
       viewport={{ once: true, margin: '-60px' }}
+      className="h-80"
     >
       {/* Idle float animation */}
       <motion.div
@@ -50,6 +51,7 @@ export function PlanetCard({ planet, index }: PlanetCardProps) {
           delay: index * 0.15,
         }}
         style={{ perspective: 900 }}
+        className="h-full"
       >
         {/* 3-D tilt + tap */}
         <motion.div
@@ -81,26 +83,36 @@ export function PlanetCard({ planet, index }: PlanetCardProps) {
               />
 
               {/* Card content */}
-              <div className="relative z-10 flex flex-col items-center text-center gap-4">
-                <div className="w-24 h-24 flex-shrink-0">
-                  <Planet3D
-                    color={planet.color}
-                    secondaryColor={planet.secondaryColor}
-                    hasRings={planet.hasRings}
-                    isGasGiant={planet.type === 'gas'}
-                    rotationSpeed={0.28}
-                    style={{ width: '100%', height: '100%' }}
-                  />
+              <div className="relative z-10 flex flex-col items-center text-center h-full">
+                {/* Fixed-height planet orb area */}
+                <div
+                  style={{ height: '180px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <div className="w-24 h-24">
+                    <Planet3D
+                      color={planet.color}
+                      secondaryColor={planet.secondaryColor}
+                      hasRings={planet.hasRings}
+                      isGasGiant={planet.type === 'gas'}
+                      rotationSpeed={0.28}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-semibold text-white tracking-wide">{planet.name}</h3>
-                  <p className="text-xs text-white/40 mt-1 uppercase tracking-widest">
-                    {planet.type === 'rocky' ? 'Rocky Planet' : 'Gas Giant'}
-                  </p>
-                </div>
+                {/* Text content — flex-1 so all cards fill the same remaining height */}
+                <div
+                  style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', paddingBottom: '4px' }}
+                >
+                  <div>
+                    <h3 className="text-xl font-semibold text-white tracking-wide">{planet.name}</h3>
+                    <p className="text-xs text-white/40 mt-1 uppercase tracking-widest">
+                      {planet.type === 'rocky' ? 'Rocky Planet' : 'Gas Giant'}
+                    </p>
+                  </div>
 
-                <p className="text-sm text-white/55 leading-relaxed">{planet.keyFact}</p>
+                  <p className="text-sm text-white/55 leading-relaxed mt-3">{planet.keyFact}</p>
+                </div>
               </div>
 
               {/* Bottom accent line */}

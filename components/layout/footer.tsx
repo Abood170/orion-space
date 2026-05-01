@@ -37,7 +37,7 @@ export function Footer() {
   const pathname = usePathname();
   if (pathname === '/blackhole' || pathname === '/orrery' || pathname === '/galaxy' || pathname === '/sandbox') return null;
   return (
-    <footer className="relative z-10 border-t border-white/[0.06] mt-16">
+    <footer className="relative z-10 border-t border-white/[0.06] mt-16 bg-[#0a0a0f]" style={{ backgroundColor: '#0a0a0f' }}>
       {/* Planet name marquee */}
       <div className="overflow-hidden border-b border-white/[0.04] py-3.5">
         <div
