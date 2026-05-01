@@ -364,7 +364,7 @@ export function GalaxyClient() {
                 style={{ background: 'rgba(0,0,0,0.68)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <p className="text-white/25 text-[9px] tracking-[0.25em] uppercase mb-3">Star Types</p>
                 <div className="flex flex-col gap-2.5">
-                  {LEGEND.map(({ color, icon, label, desc }) => (
+                  {LEGEND.map(({icon, label, desc }) => (
                     <div key={label} className="flex items-start gap-2">
                       <span className="text-xs shrink-0 mt-0.5">{icon}</span>
                       <div>
